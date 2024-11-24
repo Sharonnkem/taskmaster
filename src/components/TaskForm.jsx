@@ -20,7 +20,7 @@ const TaskForm = ({ onTaskAdded = () => {} }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("https://task-master-qz24.onrender.com/api/tasks", {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/tasks`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -5,32 +5,38 @@ import FilterBar from "./FilterBar";
 import "./taskList.css";
 
 const TaskList = () => {
-  const [tasks, setTasks] = useState([]);
-  const [filteredTasks, setFilteredTasks] = useState([]);
+  const [tasks, setTasks] = useState([]); // All tasks fetched from the server
+  const [filteredTasks, setFilteredTasks] = useState([]); // Filtered tasks based on search and filters
   const [searchQuery, setSearchQuery] = useState("");
   const [filter, setFilter] = useState("all");
-  const [loading, setLoading] = useState(true); 
-  const [error, setError] = useState(null); 
+  const [loading, setLoading] = useState(true); // Loading state
+  const [error, setError] = useState(null); // Error state
+  const [hasFetchedTasks, setHasFetchedTasks] = useState(false); // Tracks if any tasks were fetched
+
   const fetchTasks = async () => {
-    setLoading(true); 
-    setError(null); 
+    setLoading(true);
+    setError(null);
     try {
-      const response = await fetch("https://task-master-qz24.onrender.com/api/tasks", {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/tasks`, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem("token")}`, 
+          Authorization: `Bearer ${localStorage.getItem("token")}`, // Include token in fetch request
         },
       });
+
       if (response.ok) {
         const data = await response.json();
         setTasks(data);
-        setFilteredTasks(data); 
+        setFilteredTasks(data); // Initially show all tasks
+        setHasFetchedTasks(data.length > 0); // Track if tasks exist
       } else {
         setError("Error fetching tasks");
+        setHasFetchedTasks(false);
       }
     } catch (err) {
       setError("Error fetching tasks: " + err.message);
+      setHasFetchedTasks(false);
     } finally {
-      setLoading(false); 
+      setLoading(false);
     }
   };
 
@@ -41,14 +47,15 @@ const TaskList = () => {
     }
 
     try {
-      const response = await fetch(`https://task-master-qz24.onrender.com/api/tasks/${id}`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/tasks/${id}`, {
         method: "DELETE",
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem("token")}`, 
+          Authorization: `Bearer ${localStorage.getItem("token")}`, // Include token in delete request
         },
       });
+
       if (response.ok) {
-        fetchTasks(); 
+        fetchTasks(); // Refresh tasks after deletion
       } else {
         const errorData = await response.json();
         console.error("Error deleting task:", errorData.message);
@@ -82,7 +89,6 @@ const TaskList = () => {
     fetchTasks();
   }, []);
 
-  
   if (loading) {
     return <p>Loading....</p>;
   }
@@ -91,8 +97,8 @@ const TaskList = () => {
     return <p>{error}</p>;
   }
 
-  if (filteredTasks.length === 0) {
-    return <p>No Tasks added</p>;
+  if (!hasFetchedTasks) {
+    return <p>No Tasks added</p>; // Only show if no tasks were fetched
   }
 
   return (
@@ -100,9 +106,13 @@ const TaskList = () => {
       <SearchBar searchQuery={searchQuery} onSearchChange={handleSearch} />
       <FilterBar filter={filter} onFilterChange={handleFilterChange} />
       <div className="task-list">
-        {filteredTasks.map((task) => (
-          <Tasks key={task._id} task={task} onDelete={() => handleDelete(task._id)} />
-        ))}
+        {filteredTasks.length > 0 ? (
+          filteredTasks.map((task) => (
+            <Tasks key={task._id} task={task} onDelete={() => handleDelete(task._id)} />
+          ))
+        ) : (
+          <p>No tasks match your filter or search.</p> // Message for empty filter result
+        )}
       </div>
     </div>
   );

@@ -17,13 +17,13 @@ const Register = () => {
     }
 
     const payload = {
-        name,
-        email,
-        password,
+      name,
+      email,
+      password,
     };
 
     try {
-      const response = await fetch('https://task-master-qz24.onrender.com/api/auth/register', {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

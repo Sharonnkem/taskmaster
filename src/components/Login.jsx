@@ -9,17 +9,17 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    
+
     try {
-      const response = await axios.post('https://task-master-qz24.onrender.com/api/auth/login', {
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/auth/login`, {
         email,
         password,
       });
 
       localStorage.setItem('token', response.data.token);
-      window.location.href = '/taskForm'; 
+      window.location.href = '/taskForm';
     } catch (error) {
-      setErrorMessage('Invalid credentials. Please try again.');
+      setErrorMessage(error.response?.data?.message || 'Invalid credentials. Please try again.');
     }
   };
 
