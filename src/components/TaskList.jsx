@@ -5,13 +5,13 @@ import FilterBar from "./FilterBar";
 import "./taskList.css";
 
 const TaskList = () => {
-  const [tasks, setTasks] = useState([]); // All tasks fetched from the server
-  const [filteredTasks, setFilteredTasks] = useState([]); // Filtered tasks based on search and filters
+  const [tasks, setTasks] = useState([]); 
+  const [filteredTasks, setFilteredTasks] = useState([]); 
   const [searchQuery, setSearchQuery] = useState("");
   const [filter, setFilter] = useState("all");
-  const [loading, setLoading] = useState(true); // Loading state
-  const [error, setError] = useState(null); // Error state
-  const [hasFetchedTasks, setHasFetchedTasks] = useState(false); // Tracks if any tasks were fetched
+  const [loading, setLoading] = useState(true); 
+  const [error, setError] = useState(null); 
+  const [hasFetchedTasks, setHasFetchedTasks] = useState(false); 
 
   const fetchTasks = async () => {
     setLoading(true);
@@ -19,15 +19,15 @@ const TaskList = () => {
     try {
       const response = await fetch(`${process.env.REACT_APP_API_URL}/api/tasks`, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`, // Include token in fetch request
+          Authorization: `Bearer ${localStorage.getItem("token")}`, 
         },
       });
 
       if (response.ok) {
         const data = await response.json();
         setTasks(data);
-        setFilteredTasks(data); // Initially show all tasks
-        setHasFetchedTasks(data.length > 0); // Track if tasks exist
+        setFilteredTasks(data); 
+        setHasFetchedTasks(data.length > 0); 
       } else {
         setError("Error fetching tasks");
         setHasFetchedTasks(false);
@@ -50,12 +50,12 @@ const TaskList = () => {
       const response = await fetch(`${process.env.REACT_APP_API_URL}/api/tasks/${id}`, {
         method: "DELETE",
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`, // Include token in delete request
+          Authorization: `Bearer ${localStorage.getItem("token")}`, 
         },
       });
 
       if (response.ok) {
-        fetchTasks(); // Refresh tasks after deletion
+        fetchTasks();
       } else {
         const errorData = await response.json();
         console.error("Error deleting task:", errorData.message);
@@ -98,7 +98,7 @@ const TaskList = () => {
   }
 
   if (!hasFetchedTasks) {
-    return <p>No Tasks added</p>; // Only show if no tasks were fetched
+    return <p>No Tasks added</p>; 
   }
 
   return (
@@ -111,7 +111,7 @@ const TaskList = () => {
             <Tasks key={task._id} task={task} onDelete={() => handleDelete(task._id)} />
           ))
         ) : (
-          <p>No tasks match your filter or search.</p> // Message for empty filter result
+          <p>No tasks match your filter or search.</p> 
         )}
       </div>
     </div>
